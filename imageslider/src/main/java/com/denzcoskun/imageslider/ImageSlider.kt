@@ -2,13 +2,17 @@ package com.denzcoskun.imageslider
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.Handler
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.denzcoskun.imageslider.adapters.ViewPagerAdapter
@@ -28,6 +32,7 @@ import java.util.*
  * denzcoskun@hotmail.com
  * İstanbul
  */
+@RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 @SuppressLint("ClickableViewAccessibility")
 class ImageSlider @JvmOverloads constructor(
     context: Context,
@@ -70,6 +75,10 @@ class ImageSlider @JvmOverloads constructor(
         LayoutInflater.from(getContext()).inflate(R.layout.image_slider, this, true)
         viewPager = findViewById(R.id.view_pager)
         pagerDots = findViewById(R.id.pager_dots)
+        // داخل init { ... }
+        val isRTL = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL
+        viewPager?.layoutDirection = if (isRTL) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR
+
 
         val typedArray = context.theme.obtainStyledAttributes(
             attrs,
