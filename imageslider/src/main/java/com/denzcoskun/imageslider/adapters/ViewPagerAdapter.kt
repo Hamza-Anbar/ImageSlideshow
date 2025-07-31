@@ -13,6 +13,7 @@ import com.denzcoskun.imageslider.constants.ActionTypes
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.interfaces.TouchListener
+import com.denzcoskun.imageslider.interfaces.OnDataSetChangedListener
 import com.denzcoskun.imageslider.models.SlideModel
 import com.denzcoskun.imageslider.transformation.RoundedTransformation
 import com.squareup.picasso.Picasso
@@ -40,6 +41,7 @@ class ViewPagerAdapter(context: Context?,
 
     private var itemClickListener: ItemClickListener? = null
     private var touchListener: TouchListener? = null
+    private var dataSetChangedListener: OnDataSetChangedListener? = null
 
     private var lastTouchTime: Long = 0
     private var currentTouchTime: Long = 0
@@ -119,6 +121,13 @@ class ViewPagerAdapter(context: Context?,
         return itemView
     }
 
+    fun renewItems(newList: List<SlideModel>) {
+        imageList = newList
+        notifyDataSetChanged()
+        dataSetChangedListener?.onDataSetChanged()
+    }
+
+
     /**
      * Get layout gravity value from textAlign variable
      *
@@ -154,6 +163,10 @@ class ViewPagerAdapter(context: Context?,
      */
     fun setTouchListener(touchListener: TouchListener) {
         this.touchListener = touchListener
+    }
+
+    fun setOnDataSetChangedListener(listener: OnDataSetChangedListener) {
+        this.dataSetChangedListener = listener
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
