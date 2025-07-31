@@ -318,6 +318,21 @@ class ImageSlider @JvmOverloads constructor(
         viewPagerAdapter?.setOnDataSetChangedListener(listener)
     }
 
+    fun updateImages(imageList: List<SlideModel>) {
+        // فقط حدث الصور داخل الأدابتر
+        viewPagerAdapter?.renewItems(imageList)
+
+        // إذا تغير عدد الصور، حدث المؤشرات (dots)
+        if (imageCount != imageList.size) {
+            imageCount = imageList.size
+            if (!noDots) {
+                setupDots(imageCount)
+            }
+        }
+    }
+
+
+
 
 
     /**
