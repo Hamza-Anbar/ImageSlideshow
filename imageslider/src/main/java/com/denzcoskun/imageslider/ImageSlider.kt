@@ -17,6 +17,7 @@ import com.denzcoskun.imageslider.constants.AnimationTypes
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemChangeListener
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
+import com.denzcoskun.imageslider.interfaces.OnDataSetChangedListener
 import com.denzcoskun.imageslider.interfaces.TouchListener
 import com.denzcoskun.imageslider.models.SlideModel
 import java.lang.reflect.Field
@@ -60,6 +61,7 @@ class ImageSlider @JvmOverloads constructor(
 
     private var itemChangeListener: ItemChangeListener? = null
     private var touchListener: TouchListener? = null
+    private var onDataSetChangedListener: OnDataSetChangedListener? = null
 
     private var noDots = false
     private var textColor = "#FFFFFF"
@@ -107,9 +109,14 @@ class ImageSlider @JvmOverloads constructor(
      * @param  imageList  the image list by user
      */
     fun setImageList(imageList: List<SlideModel>) {
-        viewPagerAdapter = ViewPagerAdapter( context, imageList, cornerRadius, errorImage, placeholder, titleBackground, textAlign, textColor)
+        viewPagerAdapter = ViewPagerAdapter(context, imageList, cornerRadius, errorImage, placeholder, titleBackground, textAlign, textColor)
+        // اضف هذا السطر هنا
+        if (onDataSetChangedListener != null) {
+            viewPagerAdapter?.setOnDataSetChangedListener(onDataSetChangedListener!!)
+        }
         setAdapter(imageList)
     }
+
 
     /**
      * Set image list to adapter.
@@ -118,9 +125,14 @@ class ImageSlider @JvmOverloads constructor(
      * @param  scaleType  scale type for all image
      */
     fun setImageList(imageList: List<SlideModel>, scaleType: ScaleTypes? = null) {
-        viewPagerAdapter = ViewPagerAdapter( context, imageList, cornerRadius, errorImage, placeholder, titleBackground, scaleType, textAlign, textColor)
+        viewPagerAdapter = ViewPagerAdapter(context, imageList, cornerRadius, errorImage, placeholder, titleBackground, scaleType, textAlign, textColor)
+        // اضف هذا السطر هنا
+        if (onDataSetChangedListener != null) {
+            viewPagerAdapter?.setOnDataSetChangedListener(onDataSetChangedListener!!)
+        }
         setAdapter(imageList)
     }
+
 
     private fun setAdapter(imageList: List<SlideModel>){
         viewPager!!.adapter = viewPagerAdapter
@@ -300,6 +312,13 @@ class ImageSlider @JvmOverloads constructor(
         this.touchListener = touchListener
         this.viewPagerAdapter!!.setTouchListener(touchListener)
     }
+
+    fun setOnDataSetChangedListener(listener: OnDataSetChangedListener) {
+        this.onDataSetChangedListener = listener
+        viewPagerAdapter?.setOnDataSetChangedListener(listener)
+    }
+
+
 
     /**
      * Get layout gravity value from indicatorAlign variable
