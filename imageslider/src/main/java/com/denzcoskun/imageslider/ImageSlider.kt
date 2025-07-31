@@ -2,13 +2,16 @@ package com.denzcoskun.imageslider
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.denzcoskun.imageslider.adapters.ViewPagerAdapter
@@ -108,14 +111,26 @@ class ImageSlider @JvmOverloads constructor(
      *
      * @param  imageList  the image list by user
      */
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     fun setImageList(imageList: List<SlideModel>) {
-        viewPagerAdapter = ViewPagerAdapter(context, imageList, cornerRadius, errorImage, placeholder, titleBackground, textAlign, textColor)
-        // اضف هذا السطر هنا
+        // عكس القائمة إذا كان التطبيق RTL
+        val finalList = if (isRTL()) imageList.reversed() else imageList
+
+        viewPagerAdapter = ViewPagerAdapter(context, finalList, cornerRadius, errorImage, placeholder, titleBackground, textAlign, textColor)
+
         if (onDataSetChangedListener != null) {
             viewPagerAdapter?.setOnDataSetChangedListener(onDataSetChangedListener!!)
         }
-        setAdapter(imageList)
+        setAdapter(finalList)
+
+        // عند التهيئة، اجعل أول صورة في RTL هي الأخيرة (ابدأ من اليمين)
+        if (isRTL()) {
+            viewPager?.setCurrentItem(finalList.size - 1, false)
+        } else {
+            viewPager?.setCurrentItem(0, false)
+        }
     }
+
 
 
     /**
@@ -318,9 +333,12 @@ class ImageSlider @JvmOverloads constructor(
         viewPagerAdapter?.setOnDataSetChangedListener(listener)
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     fun updateImages(imageList: List<SlideModel>) {
-        // فقط حدث الصور داخل الأدابتر
-        viewPagerAdapter?.renewItems(imageList)
+        // عكس القائمة إذا كان التطبيق RTL
+        val finalList = if (isRTL()) imageList.reversed() else imageList
+
+        viewPagerAdapter?.renewItems(finalList)
 
         // إذا تغير عدد الصور، حدث المؤشرات (dots)
         if (imageCount != imageList.size) {
@@ -329,7 +347,20 @@ class ImageSlider @JvmOverloads constructor(
                 setupDots(imageCount)
             }
         }
+
+        // في حالة RTL: تأكد أن المؤشر على آخر صورة (أقصى اليمين)
+        if (isRTL()) {
+            viewPager?.setCurrentItem(finalList.size - 1, false)
+        }
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    fun isRTL(): Boolean {
+        return resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+    }
+
+
 
 
 
